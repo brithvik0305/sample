@@ -2,10 +2,8 @@ name: Update Dataset
 
 on:
   push:
-    branches:
-      - action
-    paths:
-      - 'AP/*'
+    branches: [ "action" ]
+    paths: [ "^/AP" ]
 
 jobs:
   test-runner-output:
