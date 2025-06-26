@@ -1,16 +1,37 @@
-name: Run Python Runner
+name: Update Dataset
 
 on:
- push:
-  branches:
-    - 'action'
+  push:
+    branches:
+      - action
+    paths:
+      - 'AP/*'
 
 jobs:
- run-python:
-  runs-on: self-hosted
-  steps:
-   - name: Checkout repo
-     uses: actions/checkout@v3
+  test-runner-output:
+    runs-on: self-hosted
 
-   - name: Run python script
-     run: python hello.py
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set Up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: Print changed folders (test runner)
+        run: |
+          echo "Detecting newly added folders..."
+
+          ADDED_OR_MODIFIED=$(git diff --name-status ${{ github.event.before }} ${{ github.sha }} | grep '^A' | cut -f2-)
+
+          FOLDERS=$(echo "$ADDED_OR_MODIFIED" | grep '^AP/' | awk -F/ '{print $1 "/" $2}' | sort -u)
+
+          echo "Folders found:"
+          echo "$FOLDERS"
+
+          for folder in $FOLDERS; do
+            if [ -d "$folder" ]; then
+              echo "Simulating image processing in $folder..."
+            fi
+          done
